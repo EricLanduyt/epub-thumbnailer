@@ -29,6 +29,10 @@ try:
     from PIL import Image
 except ImportError:
     import Image
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 img_ext_regex = re.compile(r'^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
 cover_regex = re.compile(r'.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
@@ -91,6 +95,10 @@ def extract_cover(cover_path):
 
 # Which file are we working with?
 input_file = sys.argv[1]
+if urlparse(input_file).scheme:
+  from gi.repository import Gio
+  gio_vfs = Gio.Vfs.get_default()
+  input_file = gio_vfs.get_file_for_uri(input_file).get_path()
 # Where do does the file have to be saved?
 output_file = sys.argv[2]
 # Required size?
